@@ -9,8 +9,6 @@ interface Message {
 }
 
 const WEBHOOK_URL = "https://n8n.srv896614.hstgr.cloud/webhook/7cc3d8e3-1777-4eec-89ce-02b14573a3d4-omniarc"
-const MAX_RETRIES = 3
-const RETRY_DELAY = 1000 // 1 second
 
 const generateSessionId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -20,7 +18,7 @@ export function useChat(tenantId: string, widgetId: string) {
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isSending, setIsSending] = useState(false)
-  const [sessionId] = useState<string>(generateSessionId()) // Generate session ID immediately by calling the function
+  const [sessionId] = useState<string>(generateSessionId())
 
   // Load messages from localStorage
   useEffect(() => {
@@ -44,40 +42,6 @@ export function useChat(tenantId: string, widgetId: string) {
     const storageKey = `omniarc_messages_${tenantId}`
     localStorage.setItem(storageKey, JSON.stringify(messages))
   }, [messages, tenantId])
-
-  const fetchWithRetry = useCallback(async (payload: any, retryCount = 0): Promise<any> => {
-    try {
-      console.log("[v0] Attempting to send message (attempt", retryCount + 1, "of", MAX_RETRIES + 1, ")")
-
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      console.log("[v0] Received response:", data)
-      return data
-    } catch (error) {
-      console.error("[v0] Fetch attempt", retryCount + 1, "failed:", error)
-
-      // Retry on network errors or 5xx errors
-      if (retryCount < MAX_RETRIES) {
-        const delay = RETRY_DELAY * Math.pow(2, retryCount) // Exponential backoff
-        console.log("[v0] Retrying in", delay, "ms...")
-        await new Promise((resolve) => setTimeout(resolve, delay))
-        return fetchWithRetry(payload, retryCount + 1)
-      }
-
-      throw error
-    }
-  }, [])
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -108,7 +72,21 @@ export function useChat(tenantId: string, widgetId: string) {
 
         console.log("[v0] Sending message to webhook:", payload)
 
-        const data = await fetchWithRetry(payload)
+        const response = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+
+        const data = await response.json()
+        console.log("[v0] Received response:", data)
+
+        if (!response.ok || data.error) {
+          const errorMessage = data.output || data.error || `HTTP ${response.status}: ${response.statusText}`
+          throw new Error(errorMessage)
+        }
 
         let assistantContent = ""
         if (data.output) {
@@ -131,11 +109,11 @@ export function useChat(tenantId: string, widgetId: string) {
         setMessages((prev) => [...prev, assistantMessage])
       } catch (error) {
         console.error("[v0] Error sending message:", error)
-        console.error("[v0] Error details:", error instanceof Error ? error.message : String(error))
+        const errorText = error instanceof Error ? error.message : String(error)
 
         const errorMessage: Message = {
           role: "assistant",
-          content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+          content: errorText,
           timestamp: Date.now(),
         }
 
@@ -145,7 +123,7 @@ export function useChat(tenantId: string, widgetId: string) {
         setIsSending(false)
       }
     },
-    [tenantId, widgetId, sessionId, isSending, fetchWithRetry],
+    [tenantId, widgetId, sessionId, isSending],
   )
 
   const clearMessages = useCallback(() => {
