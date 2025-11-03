@@ -9,6 +9,7 @@ interface Message {
 }
 
 const WEBHOOK_URL = "https://n8n.srv896614.hstgr.cloud/webhook/7cc3d8e3-1777-4eec-89ce-02b14573a3d4-omniarc"
+const WELCOME_MESSAGE = "Hey there! I'm ARC — here to help answer your questions or guide you to the right info"
 
 const generateSessionId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -32,6 +33,13 @@ export function useChat(tenantId: string, widgetId: string) {
       } catch (e) {
         console.error("[v0] Failed to parse stored messages:", e)
       }
+    } else {
+      const welcomeMessage: Message = {
+        role: "assistant",
+        content: WELCOME_MESSAGE,
+        timestamp: Date.now(),
+      }
+      setMessages([welcomeMessage])
     }
   }, [tenantId])
 
