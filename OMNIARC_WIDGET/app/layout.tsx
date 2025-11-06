@@ -1,9 +1,13 @@
-// app/page.tsx
-'use client'
+// app/layout.tsx
+export const metadata = {
+  title: 'Omniarc Widget',
+  description: 'Embeddable chat widget',
+}
 
-import { ChatWidget } from '@/components/chat-widget'
-
-// No useSearchParams here. The widget reads ?tenantId and ?mode=bare by itself.
-export default function Page() {
-  return <ChatWidget />
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body style={{ margin: 0 }}>{children}</body>
+    </html>
+  )
 }
