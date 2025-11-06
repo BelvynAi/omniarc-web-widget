@@ -71,10 +71,13 @@ export function useChat(tenantId: string, widgetId: string) {
           tenantId,
           widgetId,
           sessionId,
+          domain: window.location.hostname,
+          origin: window.location.origin,
           context: {
             referrer: document.referrer,
             path: window.location.href,
             locale: navigator.language,
+            userAgent: navigator.userAgent,
           },
         }
 
