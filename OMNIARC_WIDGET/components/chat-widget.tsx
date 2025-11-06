@@ -101,15 +101,15 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
       {isOpen ? (
         // When open: optional card; in bare mode it's frameless/transparent.
         <div
-          style={{
-            background: effectiveIsBare ? "transparent" : "#FFFFFF",
-            boxShadow: effectiveIsBare ? "none" : "0 12px 40px rgba(0,0,0,.24)",
-            borderRadius: effectiveIsBare ? 0 : 16,
-            overflow: "hidden",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+  style={{
+    background: effectiveIsBare ? "transparent" : "#FFFFFF",
+    boxShadow: effectiveIsBare ? "none" : "0 12px 40px rgba(0,0,0,.24)",
+    borderRadius: 0, // Always flat edges to avoid corner bleed
+    overflow: "hidden",
+    width: "100%",
+    height: "100%",
+  }}
+>
           <ChatPanel
             messages={chat.messages}
             isTyping={chat.isTyping}
