@@ -5,7 +5,7 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "Omniarc Chat Widget",
   description: "Embeddable chat widget with instant replies",
-    generator: 'v0.app'
+  agency: "Belvyn AI"
 }
 
 export default function RootLayout({
