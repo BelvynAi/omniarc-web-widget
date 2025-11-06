@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Omniarc Widget - Simple Embed Code</title>
+</head>
+<body>
+
+<h1>Copy the embed code below and paste it into your website</h1>
+
+<h2>Universal Embed Code (Works in Elementor, Framer, HTML, etc.)</h2>
+<pre><code>&lt;!-- Omniarc Chat Widget --&gt;
+&lt;iframe 
+  src="https://omniarc-web-widget.vercel.app?tenantId=YOUR_TENANT_ID&tenantPrimaryColor=%230F1B3A&tenantAccentColor=%232EC5FF"
+  style="position:fixed;bottom:0;right:0;width:450px;height:100vh;max-height:700px;border:none;z-index:2147483647;pointer-events:none;"
+  allow="clipboard-read; clipboard-write"
+  id="omniarc-widget"
+&gt;&lt;/iframe&gt;
+
+&lt;style&gt;
+  #omniarc-widget {
+    background: transparent;
+  }
+  
+  @media (max-width: 768px) {
+    #omniarc-widget {
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+&lt;/style&gt;
+
+&lt;script&gt;
+  // Enable pointer events only on the widget area
+  document.getElementById('omniarc-widget').contentWindow.document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('omniarc-widget').style.pointerEvents = 'auto';
+  });
+&lt;/script&gt;
+</code></pre>
+
+<h2>Instructions:</h2>
+<ol>
+  <li>Replace <code>YOUR_TENANT_ID</code> with your actual tenant ID</li>
+  <li>Paste the entire code block into your website's HTML</li>
+  <li>For Elementor: Use the "Custom HTML" widget</li>
+  <li>For Framer: Use a "Code" component</li>
+  <li>For other builders: Add to custom code section</li>
+</ol>
+
+</body>
+</html>
