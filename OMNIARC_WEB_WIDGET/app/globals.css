@@ -133,4 +133,11 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Make background transparent when embedded in iframe */
+  background: transparent !important;
+}
+
+/* Ensure html is also transparent for iframe embedding */
+html {
+  background: transparent !important;
 }
