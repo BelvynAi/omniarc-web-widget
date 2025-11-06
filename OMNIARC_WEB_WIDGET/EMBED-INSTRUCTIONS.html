@@ -4,128 +4,45 @@
   Works in: Elementor, Framer, Webflow, HTML, Base44, and all other platforms
 -->
 
-<!-- METHOD 1: INLINE EMBED (RECOMMENDED - NO EXTERNAL FILES NEEDED) -->
+<!-- METHOD 1: SIMPLE SCRIPT TAG (RECOMMENDED) -->
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  defer
+></script>
+
+<!-- METHOD 2: WITH CUSTOM COLORS -->
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  data-primary-color="#0F1B3A"
+  data-accent-color="#2EC5FF"
+  defer
+></script>
+
+<!-- METHOD 3: USING WINDOW VARIABLES -->
 <script>
-(function() {
-  // ============================================
-  // CONFIGURATION - EDIT THESE VALUES
-  // ============================================
-  const CONFIG = {
-    tenantId: "YOUR_TENANT_ID",           // Replace with your tenant ID
-    widgetId: "YOUR_WIDGET_ID",           // Replace with your widget ID (optional)
-    widgetUrl: "https://omniarc-web-widget.vercel.app", // Your widget deployment URL
-    primaryColor: "#0F1B3A",              // Primary color (optional)
-    accentColor: "#2EC5FF"                // Accent color (optional)
-  };
-  // ============================================
-
-  // Build iframe URL with query parameters
-  const params = new URLSearchParams({
-    tenantId: CONFIG.tenantId,
-    ...(CONFIG.widgetId && { widgetId: CONFIG.widgetId }),
-    ...(CONFIG.primaryColor && { tenantPrimaryColor: CONFIG.primaryColor }),
-    ...(CONFIG.accentColor && { tenantAccentColor: CONFIG.accentColor })
-  });
-
-  const iframeUrl = `${CONFIG.widgetUrl}?${params.toString()}`;
-
-  // Create container
-  const container = document.createElement('div');
-  container.id = 'omniarc-widget-container';
-  container.style.cssText = `
-    position: fixed !important;
-    bottom: 24px !important;
-    right: 24px !important;
-    width: 80px !important;
-    height: 80px !important;
-    z-index: 2147483647 !important;
-    pointer-events: none !important;
-  `;
-
-  // Create iframe
-  const iframe = document.createElement('iframe');
-  iframe.id = 'omniarc-widget-iframe';
-  iframe.src = iframeUrl;
-  iframe.style.cssText = `
-    position: absolute !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    width: 80px !important;
-    height: 80px !important;
-    border: none !important;
-    border-radius: 50% !important;
-    background: transparent !important;
-    pointer-events: auto !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  `;
-  iframe.allow = 'microphone; camera';
-  iframe.setAttribute('aria-label', 'Chat widget');
-
-  container.appendChild(iframe);
-
-  // Handle messages from iframe
-  window.addEventListener('message', function(event) {
-    // Security check - verify origin
-    if (event.origin !== CONFIG.widgetUrl) return;
-    
-    const data = event.data;
-    
-    if (data && data.source === 'omniarc-widget') {
-      if (data.type === 'size') {
-        // Update iframe size
-        const width = data.width || 80;
-        const height = data.height || 80;
-        const isExpanded = data.isOpen;
-        
-        iframe.style.width = width + 'px';
-        iframe.style.height = height + 'px';
-        container.style.width = width + 'px';
-        container.style.height = height + 'px';
-        
-        // Adjust border radius based on state
-        if (isExpanded) {
-          iframe.style.borderRadius = '16px';
-        } else {
-          iframe.style.borderRadius = '50%';
-        }
-      }
-    }
-  });
-
-  // Inject into page when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      document.body.appendChild(container);
-    });
-  } else {
-    document.body.appendChild(container);
-  }
-})();
+  window.OMNIARC_TENANT_ID = "YOUR_TENANT_ID";
+  window.OMNIARC_PRIMARY_COLOR = "#0F1B3A";
+  window.OMNIARC_ACCENT_COLOR = "#2EC5FF";
 </script>
+<script src="https://omniarc-web-widget.vercel.app/embed.js" defer></script>
 
 <!-- 
-  METHOD 2: SIMPLE VERSION (If Method 1 doesn't work in your builder)
-  Just replace YOUR_TENANT_ID with your actual tenant ID
--->
-<!--
-<div id="omniarc-chat-widget"></div>
-<script>
-  (function() {
-    var iframe = document.createElement('iframe');
-    iframe.src = 'https://omniarc-web-widget.vercel.app?tenantId=YOUR_TENANT_ID&tenantPrimaryColor=%230F1B3A&tenantAccentColor=%232EC5FF';
-    iframe.style.cssText = 'position:fixed;bottom:24px;right:24px;width:400px;height:600px;border:none;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.15);z-index:999999;';
-    document.body.appendChild(iframe);
-  })();
-</script>
--->
-
-<!-- 
-  METHOD 3: FOR ELEMENTOR (WordPress)
+  METHOD 4: FOR ELEMENTOR (WordPress)
   Paste this in a Custom HTML widget
 -->
-<!--
 <div id="omniarc-widget"></div>
-<script>
-!function(){var e=document.createElement("iframe");e.src="https://omniarc-web-widget.vercel.app?tenantId=YOUR_TENANT_ID",e.style.cssText="position:fixed;bottom:20px;right:20px;width:80px;height:80px;border:none;border-radius:50%;z-index:999999;",document.getElementById("omniarc-widget").appendChild(e)}();
-</script>
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  defer
+></script>
+
+<!-- 
+  METHOD 5: FOR FRAMER
+  Add a "Code" component and paste the same script tag above.
 -->
+
+<hr>
+<p><strong>Note:</strong> Replace YOUR_TENANT_ID with your actual tenant ID.</p>
