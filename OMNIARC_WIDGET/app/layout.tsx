@@ -1,21 +1,9 @@
-import type React from "react"
-import type { Metadata } from "next"
-import "./globals.css"
+// app/page.tsx
+'use client'
 
-export const metadata: Metadata = {
-  title: "Omniarc Chat Widget",
-  description: "Embeddable chat widget with instant replies",
-    generator: 'v0.app'
-}
+import { ChatWidget } from '@/components/chat-widget'
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body style={{ margin: 0, padding: 0, overflow: "hidden" }}>{children}</body>
-    </html>
-  )
+// No useSearchParams here. The widget reads ?tenantId and ?mode=bare by itself.
+export default function Page() {
+  return <ChatWidget />
 }
