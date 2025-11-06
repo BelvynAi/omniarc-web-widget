@@ -6,7 +6,7 @@ import { ChatPanel } from "./chat-panel"
 import { useChat } from "@/hooks/use-chat"
 
 type ChatWidgetProps = {
-  /** Optional: pass from page.tsx. If omitted, we also read ?mode=bare from the URL. */
+  /** Optional: you can ignore this. URL ?mode=bare also works. */
   isBare?: boolean
 }
 
@@ -18,7 +18,7 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
   const [accentColor, setAccentColor] = useState("#2EC5FF")
   const [bareFromQuery, setBareFromQuery] = useState(false)
 
-  // Read query params (tenant, colors, and mode)
+  // 1) Read query params (tenant/colors/mode)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const tid = params.get("tenantId") || ""
@@ -34,19 +34,26 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
     setBareFromQuery(mode === "bare")
   }, [])
 
-  // Effective bare flag (prop wins if provided, else URL param)
-  const effectiveIsBare = useMemo(() => {
-    return typeof isBare === "boolean" ? isBare : bareFromQuery
-  }, [isBare, bareFromQuery])
+  // 2) Effective "bare" flag: prop wins; else URL
+  const effectiveIsBare = useMemo(
+    () => (typeof isBare === "boolean" ? isBare : bareFromQuery),
+    [isBare, bareFromQuery],
+  )
 
-  // Set CSS variables (bg becomes transparent in bare mode)
+  // 3) Make the iframe page fully transparent (kills white squares on WordPress)
+  useEffect(() => {
+    document.documentElement.style.background = "transparent"
+    document.body.style.background = "transparent"
+  }, [])
+
+  // 4) Set CSS variables (bg is transparent in bare mode)
   useEffect(() => {
     document.documentElement.style.setProperty("--primary", primaryColor)
     document.documentElement.style.setProperty("--accent", accentColor)
     document.documentElement.style.setProperty("--bg", effectiveIsBare ? "transparent" : "#FFFFFF")
   }, [primaryColor, accentColor, effectiveIsBare])
 
-  // Notify parent iframe of size changes
+  // 5) Notify parent (if it listens) so iframe can resize automatically
   useEffect(() => {
     const notifySize = () => {
       if (window.parent !== window) {
@@ -54,6 +61,7 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
           {
             source: "omniarc-widget",
             type: "size",
+            // When closed, we ask parent to be a tiny bubble; when open, parent can expand.
             width: isOpen ? Math.min(window.innerWidth * 0.92, 380) : 56,
             height: isOpen
               ? (window.innerWidth < 768 ? window.innerHeight * 0.85 : window.innerHeight * 0.7)
@@ -69,7 +77,7 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
     return () => window.removeEventListener("resize", notifySize)
   }, [isOpen])
 
-  // ESC to close
+  // 6) ESC to close
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) setIsOpen(false)
@@ -89,17 +97,22 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
   }
 
   return (
-    <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 2147483000 }}>
+    <div
+      // fixed to the corner; no background here at all
+      style={{ position: "fixed", bottom: 24, right: 24, zIndex: 2147483000 }}
+    >
       {isOpen ? (
-        // Card wrapper: removes white bg, radius, and shadow in bare mode
+        // Only show a container when OPEN.
+        // In bare mode this container is transparent (no shadow/no radius).
+        // Width/height are 100% so it fills whatever the iframe size is (works great on WordPress).
         <div
           style={{
             background: effectiveIsBare ? "transparent" : "#FFFFFF",
             boxShadow: effectiveIsBare ? "none" : "0 12px 40px rgba(0,0,0,.24)",
             borderRadius: effectiveIsBare ? 0 : 16,
             overflow: "hidden",
-            width: Math.min(window.innerWidth * 0.92, 380),
-            height: window.innerWidth < 768 ? window.innerHeight * 0.85 : window.innerHeight * 0.7,
+            width: "100%",
+            height: "100%",
           }}
         >
           <ChatPanel
@@ -114,6 +127,7 @@ export function ChatWidget({ isBare }: ChatWidgetProps) {
           />
         </div>
       ) : (
+        // When CLOSED we render ONLY the button (no wrapper background)
         <LauncherButton
           onClick={() => setIsOpen(true)}
           hasUnread={false}
