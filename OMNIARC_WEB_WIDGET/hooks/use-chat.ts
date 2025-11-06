@@ -8,7 +8,7 @@ interface Message {
   timestamp: number
 }
 
-const WEBHOOK_URL = "https://n8n.srv896614.hstgr.cloud/webhook/7cc3d8e3-1777-4eec-89ce-02b14573a3d4-omniarc"
+const WEBHOOK_URL = "https://omniarc-cors.solitary-breeze-09bb.workers.dev/"
 const WELCOME_MESSAGE = "Hey there! I'm ARC — here to help answer your questions or guide you to the right info"
 
 const generateSessionId = (): string => {
