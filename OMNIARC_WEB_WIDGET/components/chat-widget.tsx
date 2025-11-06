@@ -32,24 +32,16 @@ export function ChatWidget() {
   }, [])
 
   useEffect(() => {
-    // Notify parent iframe of size changes
-    const notifySize = () => {
-      if (window.parent !== window) {
-        window.parent.postMessage(
-          {
-            source: "omniarc-widget",
-            type: "size",
-            width: isOpen ? Math.min(window.innerWidth * 0.92, 380) : 56,
-            height: isOpen ? (window.innerWidth < 768 ? window.innerHeight * 0.85 : window.innerHeight * 0.7) : 56,
-          },
-          "*",
-        )
-      }
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        {
+          source: "omniarc-widget",
+          type: "resize",
+          isOpen: isOpen,
+        },
+        "*",
+      )
     }
-
-    notifySize()
-    window.addEventListener("resize", notifySize)
-    return () => window.removeEventListener("resize", notifySize)
   }, [isOpen])
 
   useEffect(() => {
