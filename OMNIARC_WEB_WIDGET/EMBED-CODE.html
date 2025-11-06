@@ -1,0 +1,51 @@
+<!-- COPY THIS ENTIRE CODE BLOCK -->
+<script>
+(function() {
+  // Create iframe
+  var iframe = document.createElement('iframe');
+  iframe.id = 'omniarc-widget-iframe';
+  iframe.src = 'https://omniarc-web-widget.vercel.app?tenantId=YOUR_TENANT_ID&tenantPrimaryColor=%230F1B3A&tenantAccentColor=%232EC5FF';
+  iframe.style.cssText = 'position:fixed;bottom:24px;right:24px;width:80px;height:80px;border:none;border-radius:50%;z-index:2147483647;background:transparent;pointer-events:auto;';
+  iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
+  
+  // Listen for size changes from the widget
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.source === 'omniarc-widget') {
+      if (event.data.type === 'resize') {
+        var isOpen = event.data.isOpen;
+        if (isOpen) {
+          // Expanded state
+          iframe.style.width = '400px';
+          iframe.style.height = '600px';
+          iframe.style.borderRadius = '16px';
+          iframe.style.maxHeight = '90vh';
+          
+          // Mobile responsive
+          if (window.innerWidth < 768) {
+            iframe.style.width = '92vw';
+            iframe.style.height = '85vh';
+            iframe.style.right = '4vw';
+            iframe.style.bottom = '20px';
+          }
+        } else {
+          // Collapsed state
+          iframe.style.width = '80px';
+          iframe.style.height = '80px';
+          iframe.style.borderRadius = '50%';
+          iframe.style.right = '24px';
+          iframe.style.bottom = '24px';
+        }
+      }
+    }
+  });
+  
+  // Append to body when DOM is ready
+  if (document.body) {
+    document.body.appendChild(iframe);
+  } else {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.appendChild(iframe);
+    });
+  }
+})();
+</script>
