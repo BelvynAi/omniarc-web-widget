@@ -31,7 +31,7 @@ export function useChat(tenantId: string, widgetId: string) {
       try {
         setMessages(JSON.parse(stored))
       } catch (e) {
-        console.error("[v0] Failed to parse stored messages:", e)
+        console.error("[Omniarc] Failed to parse stored messages:", e)
       }
     } else {
       const welcomeMessage: Message = {
@@ -81,21 +81,33 @@ export function useChat(tenantId: string, widgetId: string) {
           },
         }
 
-        console.log("[v0] Sending message to webhook:", payload)
+        console.log("[Omniarc] Sending message to webhook:", payload)
 
         const response = await fetch(WEBHOOK_URL, {
           method: "POST",
+          mode: "cors",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         })
 
-        const data = await response.json()
-        console.log("[v0] Received response:", data)
+        console.log("[Omniarc] Response status:", response.status, response.statusText)
+        console.log("[Omniarc] Response headers:", Object.fromEntries(response.headers.entries()))
 
-        if (!response.ok || data.error) {
-          const errorMessage = data.output || data.error || `HTTP ${response.status}: ${response.statusText}`
+        const contentType = response.headers.get("content-type")
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await response.text()
+          console.error("[Omniarc] Non-JSON response received:", text)
+          throw new Error("Server returned non-JSON response. Please check webhook configuration.")
+        }
+
+        const data = await response.json()
+        console.log("[Omniarc] Received response data:", data)
+
+        if (!response.ok) {
+          const errorMessage = data.output || data.error || data.message || `Server error: ${response.status}`
+          console.error("[Omniarc] Server error:", errorMessage)
           throw new Error(errorMessage)
         }
 
@@ -104,12 +116,19 @@ export function useChat(tenantId: string, widgetId: string) {
           assistantContent = data.output
         } else if (data.reply) {
           assistantContent = data.reply
+        } else if (data.message) {
+          assistantContent = data.message
+        } else if (data.response) {
+          assistantContent = data.response
         } else if (data.messages && Array.isArray(data.messages)) {
           const assistantMsg = data.messages.find((m: any) => m.role === "assistant")
           assistantContent = assistantMsg?.content || "No response received"
         } else {
-          assistantContent = "No response received"
+          console.warn("[Omniarc] Unexpected response format:", data)
+          assistantContent = JSON.stringify(data)
         }
+
+        console.log("[Omniarc] Assistant content:", assistantContent)
 
         const assistantMessage: Message = {
           role: "assistant",
@@ -119,8 +138,16 @@ export function useChat(tenantId: string, widgetId: string) {
 
         setMessages((prev) => [...prev, assistantMessage])
       } catch (error) {
-        console.error("[v0] Error sending message:", error)
-        const errorText = error instanceof Error ? error.message : String(error)
+        console.error("[Omniarc] Error sending message:", error)
+
+        let errorText = "Sorry, I couldn't process your message. Please try again."
+
+        if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+          errorText = "Connection error. Please check your internet connection and try again."
+          console.error("[Omniarc] Network error - possible CORS issue or network failure")
+        } else if (error instanceof Error) {
+          errorText = error.message
+        }
 
         const errorMessage: Message = {
           role: "assistant",
