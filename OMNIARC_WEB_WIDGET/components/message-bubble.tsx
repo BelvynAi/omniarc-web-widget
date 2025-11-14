@@ -14,28 +14,58 @@ export function MessageBubble({ role, content, accentColor, primaryColor }: Mess
 
   const parseContent = (text: string): ReactNode => {
     const parts: (string | JSX.Element)[] = []
-    let lastIndex = 0
+    
+    // Combined regex for both bold text and URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g
     const boldRegex = /\*\*(.+?)\*\*/g
-    let match
-
-    while ((match = boldRegex.exec(text)) !== null) {
-      // Add text before the bold
-      if (match.index > lastIndex) {
-        parts.push(text.substring(lastIndex, match.index))
+    
+    // Split by URLs first
+    const urlParts = text.split(urlRegex)
+    
+    urlParts.forEach((part, index) => {
+      // Check if this part is a URL
+      if (urlRegex.test(part)) {
+        urlRegex.lastIndex = 0 // Reset regex
+        parts.push(
+          <a
+            key={`link-${index}`}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: isUser ? "#FFFFFF" : accentColor,
+              textDecoration: "underline",
+              fontWeight: 500,
+            }}
+          >
+            {part}
+          </a>
+        )
+      } else {
+        // Parse for bold text within this part
+        let lastIndex = 0
+        let match
+        const boldParts: (string | JSX.Element)[] = []
+        
+        while ((match = boldRegex.exec(part)) !== null) {
+          if (match.index > lastIndex) {
+            boldParts.push(part.substring(lastIndex, match.index))
+          }
+          boldParts.push(
+            <strong key={`bold-${index}-${match.index}`} style={{ fontWeight: "bold" }}>
+              {match[1]}
+            </strong>
+          )
+          lastIndex = boldRegex.lastIndex
+        }
+        
+        if (lastIndex < part.length) {
+          boldParts.push(part.substring(lastIndex))
+        }
+        
+        parts.push(...boldParts)
       }
-      // Add bold text
-      parts.push(
-        <strong key={`bold-${match.index}`} style={{ fontWeight: "bold" }}>
-          {match[1]}
-        </strong>,
-      )
-      lastIndex = boldRegex.lastIndex
-    }
-
-    // Add remaining text
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex))
-    }
+    })
 
     return parts.length > 0 ? parts : text
   }
