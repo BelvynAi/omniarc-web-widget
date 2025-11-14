@@ -10,6 +10,7 @@
     let tenantId = ""
     let primaryColor = "#0F1B3A"
     let accentColor = "#2EC5FF"
+    let logoUrl = "" // Added logoUrl configuration
 
     // Try to find the script tag
     const scripts = document.querySelectorAll('script[src*="embed.js"]')
@@ -19,14 +20,16 @@
       tenantId = script.getAttribute("data-tenant-id") || ""
       primaryColor = script.getAttribute("data-primary-color") || primaryColor
       accentColor = script.getAttribute("data-accent-color") || accentColor
+      logoUrl = script.getAttribute("data-logo-url") || "" // Get logoUrl from script attribute
     }
 
     // Fallback to window variables
     tenantId = tenantId || window.OMNIARC_TENANT_ID || ""
     primaryColor = window.OMNIARC_PRIMARY_COLOR || primaryColor
     accentColor = window.OMNIARC_ACCENT_COLOR || accentColor
+    logoUrl = window.OMNIARC_LOGO_URL || logoUrl // Fallback to window variable
 
-    return { tenantId, primaryColor, accentColor }
+    return { tenantId, primaryColor, accentColor, logoUrl } // Return logoUrl
   }
 
   function initWidget() {
@@ -51,6 +54,10 @@
       tenantPrimaryColor: config.primaryColor,
       tenantAccentColor: config.accentColor,
     })
+
+    if (config.logoUrl) {
+      params.set("logoUrl", config.logoUrl)
+    }
 
     const iframeUrl = `${WIDGET_URL}?${params.toString()}`
     console.log("[Omniarc] Creating iframe:", iframeUrl)
