@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Omniarc Widget Embed Examples</title>
+</head>
+<body>
+
+<!-- EXAMPLE 1: Basic Embed (Default Colors & Logo) -->
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  defer
+></script>
+
+<!-- EXAMPLE 2: Custom Colors -->
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  data-primary-color="#1E40AF"
+  data-accent-color="#F59E0B"
+  defer
+></script>
+
+<!-- EXAMPLE 3: Custom Colors + Logo URL -->
+<script 
+  src="https://omniarc-web-widget.vercel.app/embed.js"
+  data-tenant-id="YOUR_TENANT_ID"
+  data-primary-color="#7C3AED"
+  data-accent-color="#EC4899"
+  data-logo-url="https://example.com/logo.png"
+  defer
+></script>
+
+<!-- EXAMPLE 4: Inline Configuration (Alternative method) -->
+<script>
+window.OMNIARC_TENANT_ID = "YOUR_TENANT_ID";
+window.OMNIARC_PRIMARY_COLOR = "#059669";
+window.OMNIARC_ACCENT_COLOR = "#14B8A6";
+window.OMNIARC_LOGO_URL = "https://example.com/logo.png";
+</script>
+<script src="https://omniarc-web-widget.vercel.app/embed.js" defer></script>
+
+<!-- EXAMPLE 5: Inline Iframe (No external JS file needed) -->
+<script>
+(function() {
+  var iframe = document.createElement('iframe');
+  
+  // Configure your settings
+  var tenantId = "YOUR_TENANT_ID";
+  var primaryColor = "#0F1B3A";
+  var accentColor = "#2EC5FF";
+  var logoUrl = "https://example.com/logo.png";
+  
+  // Build URL
+  var params = new URLSearchParams({
+    tenantId: tenantId,
+    tenantPrimaryColor: primaryColor,
+    tenantAccentColor: accentColor,
+    logoUrl: logoUrl
+  });
+  
+  iframe.src = 'https://omniarc-web-widget.vercel.app?' + params.toString();
+  iframe.style.cssText = 'position:fixed;bottom:0;right:0;width:450px;height:100vh;max-height:700px;border:none;z-index:999999;background:transparent;pointer-events:auto;';
+  
+  function init() {
+    if (document.body) {
+      document.body.appendChild(iframe);
+    } else {
+      setTimeout(init, 100);
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
