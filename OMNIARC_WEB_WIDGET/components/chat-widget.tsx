@@ -11,6 +11,7 @@ export function ChatWidget() {
   const [widgetId, setWidgetId] = useState("")
   const [primaryColor, setPrimaryColor] = useState("#0F1B3A")
   const [accentColor, setAccentColor] = useState("#2EC5FF")
+  const [logoUrl, setLogoUrl] = useState("")
 
   useEffect(() => {
     // Parse query params
@@ -19,11 +20,13 @@ export function ChatWidget() {
     const wid = params.get("widgetId") || tid
     const primary = params.get("tenantPrimaryColor") || "#0F1B3A"
     const accent = params.get("tenantAccentColor") || "#2EC5FF"
+    const logo = params.get("logoUrl") || ""
 
     setTenantId(tid)
     setWidgetId(wid)
     setPrimaryColor(primary)
     setAccentColor(accent)
+    setLogoUrl(logo)
 
     // Set CSS variables
     document.documentElement.style.setProperty("--primary", primary)
@@ -78,6 +81,7 @@ export function ChatWidget() {
           onClear={chat.clearMessages}
           primaryColor={primaryColor}
           accentColor={accentColor}
+          logoUrl={logoUrl}
         />
       ) : (
         <LauncherButton
@@ -85,6 +89,7 @@ export function ChatWidget() {
           hasUnread={false}
           primaryColor={primaryColor}
           accentColor={accentColor}
+          logoUrl={logoUrl}
         />
       )}
     </div>
