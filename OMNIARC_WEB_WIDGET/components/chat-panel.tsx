@@ -21,6 +21,7 @@ interface ChatPanelProps {
   onClear: () => void
   primaryColor: string
   accentColor: string
+  logoUrl?: string // Added optional logoUrl prop
 }
 
 export function ChatPanel({
@@ -32,6 +33,7 @@ export function ChatPanel({
   onClear,
   primaryColor,
   accentColor,
+  logoUrl, // Added logoUrl parameter
 }: ChatPanelProps) {
   const [input, setInput] = useState("")
   const [isInputFocused, setIsInputFocused] = useState(false) // Added state to track input focus for shadow effect
@@ -131,9 +133,9 @@ export function ChatPanel({
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <img
-            src="/images/design-mode/f9934892f_Omniarclogo.png"
-            alt="Omniarc logo"
-            style={{ width: "32px", height: "32px", borderRadius: "50%" }}
+            src={logoUrl || "/images/design-mode/f9934892f_Omniarclogo.png"}
+            alt="Logo"
+            style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
           />
           <div>
             <div style={{ color: "#FFFFFF", fontSize: "16px", fontWeight: "600", fontFamily: "system-ui, sans-serif" }}>
