@@ -80,7 +80,7 @@ export function MessageBubble({ role, content, accentColor, primaryColor }: Mess
       <div
         style={{
           backgroundColor: isUser ? accentColor : "#FFFFFF",
-          color: isUser ? "#FFFFFF" : primaryColor,
+          color: isUser ? "#FFFFFF" : "#1F2937",
           border: isUser ? "none" : "1px solid #E9EDF3",
           borderTopLeftRadius: "20px",
           borderTopRightRadius: "20px",
